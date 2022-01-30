@@ -5,7 +5,9 @@ const mongoose = require('mongoose');
 const cors = require('cors')
 const dotenv = require('dotenv')
 dotenv.config()
+// Importacion de rutas
 const postRoutes = require('./routes/posts')
+const userRoutes = require('./routes/user')
 
 const app = express()
 
@@ -20,6 +22,7 @@ app.use(cors())
 
 //Config de rutas para los endpoints
 app.use('/api/posts', postRoutes)
+app.use('/api/users', userRoutes)
 
 app.get('/', (req, res) => {
     res.send('Bienvenidos al memories API V1.0.0')
