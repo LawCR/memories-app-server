@@ -2,11 +2,41 @@ const Posts = require("../models/Posts")
 const mongoose = require('mongoose')
 
 const getPosts = async(req, res) => {
+    const { page } = req.query
     try {
-        const posts = await Posts.find()
-        res.status(200).json(posts)
+        const LIMIT = 8
+        // obtener el index de la pagina segun el numero de pagina
+        const startIndex = (Number(page) - 1) * LIMIT
+        // Obtener el total de posts que hay para calcular cuantas paginas de 8 habrá
+        const total = await Posts.countDocuments({})
+        // Obtener los posts(8) ordenado por los mas nuevos ignorando los que no esten en esos 8
+        const posts = await Posts.find().sort({_id: -1}).limit(LIMIT).skip(startIndex)
+        res.status(200).json({data: posts, currentPage: Number(page), numberOfPages: Math.ceil(total / LIMIT)})
     } catch (error) {
         res.status(409).json({msg: error.message})
+    }
+}
+
+const getPost = async(req, res) => {
+    const { id } = req.params
+    try {
+        const post = await Posts.findById(id)
+        res.status(200).json(post)
+    } catch (error) {
+        res.status(409).json({msg: error.message})
+    }
+}
+
+const PostsBySearch = async(req, res) => {
+    const { searchQuery, tags } = req.query
+    try {
+        // Nos permite que palabras como Test,TEST,test las cuente como las mismas
+        const title = new RegExp(searchQuery, 'i')
+        // Mostrar todos los posts que coincidan con el title o en su defecto por algun tag
+        const posts = await Posts.find({ $or: [ {title }, { tags: {$in: tags.split(',')} } ] })
+        res.status(200).json({data: posts})
+    } catch (error) {
+        res.status(404).json({msg: error.message})
     }
 }
 
@@ -64,10 +94,14 @@ const likePost = async(req, res) => {
     const updatedPost = await Posts.findByIdAndUpdate(id, post , {new: true})
     res.status(200).json(updatedPost);
 }
+
+
 module.exports = {
     getPosts,
     createPost,
     updatePost,
     deletePost,
-    likePost
+    likePost,
+    PostsBySearch,
+    getPost
 }
