@@ -25,7 +25,7 @@ app.use('/api/posts', postRoutes)
 app.use('/api/users', userRoutes)
 
 app.get('/', (req, res) => {
-    res.send('Bienvenidos al memories API V3.0.0')
+    res.send('Bienvenidos al memories API V3.5.0')
 })
 
 const PORT = process.env.PORT || 8081
