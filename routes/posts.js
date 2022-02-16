@@ -1,5 +1,5 @@
 const express = require("express");
-const { getPosts, createPost, updatePost, deletePost, likePost, PostsBySearch, getPost } = require("../controllers/postsController");
+const { getPosts, createPost, updatePost, deletePost, likePost, PostsBySearch, getPost, commentPost } = require("../controllers/postsController");
 const { authValidation } = require("../middleware/auth");
 
 
@@ -19,6 +19,8 @@ router.patch('/:id', authValidation, updatePost)
 router.delete('/:id', authValidation, deletePost)
 
 router.patch('/:id/likePost', authValidation, likePost)
+
+router.post('/:id/commentPost', authValidation, commentPost)
 
 
 
